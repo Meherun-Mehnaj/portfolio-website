@@ -35,39 +35,11 @@ const revealObserver = new IntersectionObserver(
 
 document.querySelectorAll("[data-reveal]").forEach((element) => revealObserver.observe(element));
 
-const counterObserver = new IntersectionObserver(
-  (entries) => {
-    entries.forEach((entry) => {
-      if (!entry.isIntersecting) return;
-      animateCounter(entry.target);
-      counterObserver.unobserve(entry.target);
-    });
-  },
-  { threshold: 0.5 }
-);
+document.querySelectorAll("[data-counter]").forEach((counter) => setCounterValue(counter));
 
-document.querySelectorAll("[data-counter]").forEach((counter) => counterObserver.observe(counter));
-
-function animateCounter(element) {
+function setCounterValue(element) {
   const target = Number(element.dataset.counter);
-  const hasDecimal = !Number.isInteger(target);
-  const duration = prefersReducedMotion ? 1 : 1100;
-  const start = performance.now();
-
-  function update(now) {
-    const progress = Math.min((now - start) / duration, 1);
-    const eased = 1 - Math.pow(1 - progress, 3);
-    const value = target * eased;
-    element.textContent = hasDecimal ? value.toFixed(2) : Math.round(value);
-
-    if (progress < 1) {
-      requestAnimationFrame(update);
-    } else {
-      element.textContent = hasDecimal ? target.toFixed(2) : target;
-    }
-  }
-
-  requestAnimationFrame(update);
+  element.textContent = Number.isInteger(target) ? target : target.toFixed(2);
 }
 
 document.querySelectorAll("[data-tilt]").forEach((card) => {
